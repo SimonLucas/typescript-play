@@ -239,3 +239,19 @@ export class XGraphicsTS implements XGraphics {
         this.ctx.restore();
     }
 }
+
+export class PolyUtil {
+    makePolygon(n: number = 6, rad: number = 10.0, startAngle: number = 0.0): Vec2d[] {
+        const verts: Vec2d[] = [];
+        const step = (2 * Math.PI) / n;
+
+        for (let i = 0; i < n; i++) {
+            const angle = startAngle + i * step;
+            const x = rad * Math.sin(angle);
+            const y = rad * Math.cos(angle);
+            verts.push(new Vec2d(x, y));
+        }
+
+        return verts;
+    }
+}

@@ -1,7 +1,7 @@
 // src/examples/HelloXGraphics.ts
 import { Vec2d } from "../util/Vec2d";
 import { XGraphics, XApp,XMouseEvent, XMouseEventType, 
-     XKeyEvent, XKeyEventType } from "../gui/XGraphics";
+     XKeyEvent, XKeyEventType, PolyUtil } from "../gui/XGraphics";
 import { XColor, XStyle, TStyle, XRect, XRoundedRect, XLine,
      XPoly, XText} from "../gui/Drawable";
 

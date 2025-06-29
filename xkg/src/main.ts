@@ -10,6 +10,22 @@ if (!canvas || !ctx) {
     throw new Error("Could not find canvas or context");
 }
 
+
+const dpr = window.devicePixelRatio || 1;
+const width = 800;
+const height = 600;
+
+// Set canvas size in CSS pixels (logical size)
+canvas.style.width = width + "px";
+canvas.style.height = height + "px";
+
+// Set canvas size in actual pixels (backing store size)
+canvas.width = width * dpr;
+canvas.height = height * dpr;
+
+// Scale drawing context
+ctx?.scale(dpr, dpr);
+
 const xg = new XGraphicsTS(canvas, ctx);
 const app = new HelloXGraphics();
 
