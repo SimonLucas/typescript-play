@@ -19,25 +19,59 @@ export class XColor {
     static brown = new XColor(0.5, 0.25, 0);
 }
 
+
+// export class XStyle {
+//     constructor(
+//         public fg: XColor = XColor.black,
+//         public bg: XColor = XColor.white,
+//         public lc: XColor = XColor.red,
+//         public stroke: boolean = true,
+//         public fill: boolean = true,
+//         public lineWidth: number = 2.0
+//     ) {}
+// }
 export class XStyle {
-    constructor(
-        public fg: XColor = XColor.black,
-        public bg: XColor = XColor.white,
-        public lc: XColor = XColor.red,
-        public stroke: boolean = true,
-        public fill: boolean = true,
-        public lineWidth: number = 2.0
-    ) {}
+  fg: XColor;
+  bg: XColor;
+  lc: XColor;
+  stroke: boolean;
+  fill: boolean;
+  lineWidth: number;
+
+  constructor(opts: Partial<XStyle> = {}) {
+    this.fg = opts.fg ?? XColor.black;
+    this.bg = opts.bg ?? XColor.white;
+    this.lc = opts.lc ?? XColor.red;
+    this.stroke = opts.stroke ?? true;
+    this.fill = opts.fill ?? true;
+    this.lineWidth = opts.lineWidth ?? 2.0;
+  }
 }
 
+// export class TStyle {
+//     constructor(
+//         public fg: XColor = XColor.cyan,
+//         public font: string = "Arial",
+//         public size: number = 16.0,
+//         public flipped: boolean = false
+//     ) {}
+// }
+
 export class TStyle {
-    constructor(
-        public fg: XColor = XColor.cyan,
-        public font: string = "Arial",
-        public size: number = 16.0,
-        public flipped: boolean = false
-    ) {}
+  fg: XColor;
+  font: string;
+  size: number;
+  flipped: boolean;
+
+  constructor(opts: Partial<TStyle> = {}) {
+    this.fg = opts.fg ?? XColor.cyan;
+    this.font = opts.font ?? "Arial";
+    this.size = opts.size ?? 16.0;
+    this.flipped = opts.flipped ?? false;
+  }
 }
+
+
 // Interfaces
 
 export interface Drawable {
@@ -160,4 +194,44 @@ export class XPoly implements GeomDrawable {
         }
         return inside;
     }
+}
+
+export class XEllipse implements GeomDrawable {
+  centre: Vec2d;
+  w: number;
+  h: number;
+  dStyle: XStyle;
+  rotation: number;
+
+  constructor(
+    centre: Vec2d,
+    w: number,
+    h: number,
+    dStyle: XStyle = new XStyle(),
+    rotation: number = 0.0
+  ) {
+    this.centre = centre;
+    this.w = w;
+    this.h = h;
+    this.dStyle = dStyle;
+    this.rotation = rotation;
+  }
+
+  get a2(): number {
+    return (this.w / 2) ** 2;
+  }
+
+  get b2(): number {
+    return (this.h / 2) ** 2;
+  }
+
+  contains(p: Vec2d | null): boolean {
+    if (p === null) return false;
+    const tp = p.sub(this.centre).rotatedBy(-this.rotation);
+    return (tp.x ** 2) / this.a2 + (tp.y ** 2) / this.b2 <= 1;
+  }
+
+  radius(): number {
+    return Math.max(this.w / 2, this.h / 2);
+  }
 }

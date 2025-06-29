@@ -18,11 +18,15 @@ export class PureRandomAgent extends PlanetWarsPlayer {
 
 // Optional main test (run via ts-node or embed in browser console log if using UI)
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-    const agent = new PureRandomAgent();
-    agent.prepareToPlayAs(Player.Player1, new GameParams());    
-    const gameState = new GameStateFactory(new GameParams()).createGame();
-    const action = agent.getAction(gameState);
-    console.log(action);
+const isNode = typeof process !== 'undefined' && process.versions?.node;
+if (isNode) {
+  // Node-specific test code here
+    if (import.meta.url === `file://${process.argv[1]}`) {
+        const agent = new PureRandomAgent();
+        agent.prepareToPlayAs(Player.Player1, new GameParams());    
+        const gameState = new GameStateFactory(new GameParams()).createGame();
+        const action = agent.getAction(gameState);
+        console.log(action);
+    }
 }
 

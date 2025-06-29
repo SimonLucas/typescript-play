@@ -1,60 +1,30 @@
 // src/main.ts
-import { HelloXGraphics } from "./examples/HelloXGraphics";
-import { XGraphicsTS, LRect, XMouseEvent, XMouseEventType, XKeyEvent, XKeyEventType } from "./gui/XGraphics";
-import { Vec2d } from "./util/Vec2d";
 
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d");
+import { GameParams } from "./planetwars/core/GameParams";
+import { GameStateFactory } from "./planetwars/core/GameStateFactory";
+import { PureRandomAgent } from "./planetwars/agents/PureRandomAgent";
+import { CarefulRandomAgent } from "./planetwars/agents/CarefulRandomAgent";
+import { GameRunner } from "./planetwars/core/GameRunner";
+import { GameView } from "./planetwars/view/GameView";
+import { AppLauncher } from "./gui/AppLauncher";
 
-if (!canvas || !ctx) {
-    throw new Error("Could not find canvas or context");
-}
+// Set up game parameters
+const params = new GameParams({numPlanets: 20}); 
 
+// Create initial game state
+const gameState = new GameStateFactory(params).createGame();
 
-const dpr = window.devicePixelRatio || 1;
-const width = 800;
-const height = 600;
+// Create agents
+const agent1 = new CarefulRandomAgent();
+const agent2 = new PureRandomAgent();
 
-// Set canvas size in CSS pixels (logical size)
-canvas.style.width = width + "px";
-canvas.style.height = height + "px";
+// Create game runner
+const gameRunner = new GameRunner(agent1, agent2, params);
 
-// Set canvas size in actual pixels (backing store size)
-canvas.width = width * dpr;
-canvas.height = height * dpr;
+// Create the GameView app
+const view = new GameView(gameState, params, undefined, gameRunner);
 
-// Scale drawing context
-ctx?.scale(dpr, dpr);
-
-const xg = new XGraphicsTS(canvas, ctx);
-const app = new HelloXGraphics();
-
-canvas.addEventListener("mousedown", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const pos = new Vec2d(e.clientX - rect.left, e.clientY - rect.top);
-    app.handleMouseEvent(new XMouseEvent(XMouseEventType.Down, pos));
-});
-
-canvas.addEventListener("mouseup", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const pos = new Vec2d(e.clientX - rect.left, e.clientY - rect.top);
-    app.handleMouseEvent(new XMouseEvent(XMouseEventType.Up, pos));
-});
-
-canvas.addEventListener("mousemove", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const pos = new Vec2d(e.clientX - rect.left, e.clientY - rect.top);
-    app.handleMouseEvent(new XMouseEvent(XMouseEventType.Moved, pos));
-});
-
-window.addEventListener("keydown", (e) => {
-    app.handleKeyEvent(new XKeyEvent(XKeyEventType.Pressed, e.keyCode));
-});
-
-function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    app.paint(xg);
-    requestAnimationFrame(loop);
-}
-
-loop();
+// Launch the app
+const title = `${agent1.getAgentType()} : Planet Wars : ${agent2.getAgentType()}`;
+const launcher = new AppLauncher(view, params.width, params.height, 60, title);
+launcher.launch();

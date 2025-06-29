@@ -1,7 +1,7 @@
 // src/planetwars/core/ForwardModel.ts
-import { GameState, Planet, Player, Transporter } from "./GameState";
+import { GameState, Planet, Player, Transporter, opponent } from "./GameState";
 import { GameParams } from "./GameParams";
-import { Action } from "../agents/Action";
+import { Action } from "./AgentInterfaces";
 import { Vec2d } from "../../util/Vec2d";
 
 export class ForwardModel {
@@ -88,7 +88,7 @@ export class ForwardModel {
                     this.transporterArrival(dest, tr, pending);
                     planet.transporter = null;
                 } else {
-                    tr.s.iadd(tr.v);
+                    tr.s = tr.s.add(tr.v);
                 }
             }
         }
@@ -110,10 +110,10 @@ export class ForwardModel {
         planet.nShips += planet.growthRate;
         if (!pending) return;
         const own = pending.get(planet.owner) || 0;
-        const opp = pending.get(planet.owner.opponent()) || 0;
+        const opp = pending.get(opponent(planet.owner)) || 0;
         planet.nShips += own - opp;
         if (planet.nShips < 0) {
-            planet.owner = planet.owner.opponent();
+            planet.owner = opponent(planet.owner);
             planet.nShips = -planet.nShips;
         }
     }

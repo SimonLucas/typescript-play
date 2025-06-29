@@ -2,7 +2,8 @@
 import { Vec2d } from "../util/Vec2d";
 import {
     Drawable, GeomDrawable,XColor, XStyle, TStyle,
-    XRect, XRoundedRect, XLine, XPoly, XText
+    XRect, XRoundedRect, XLine, XPoly, XText,
+    XEllipse
 } from "./Drawable";
 
 export interface XGraphics {
@@ -122,6 +123,10 @@ export class XGraphicsTS implements XGraphics {
         else if (toDraw instanceof XLine) this.drawLine(toDraw);
         else if (toDraw instanceof XText) this.drawText(toDraw);
         else if (toDraw instanceof XPoly) this.drawPoly(toDraw);
+        else if (toDraw instanceof XEllipse) this.drawEllipse(toDraw);
+        else {
+            console.warn("Unsupported drawable type:", toDraw);
+        }
     }
 
     drawables(): Drawable[] {
@@ -238,6 +243,23 @@ export class XGraphicsTS implements XGraphics {
         if (p.dStyle.stroke) this.ctx.stroke();
         this.ctx.restore();
     }
+
+    private drawEllipse(e: XEllipse): void {
+        const ctx = this.ctx;
+        const { centre, w, h, dStyle, rotation } = e;
+
+        ctx.save();
+        ctx.translate(centre.x, centre.y);
+        ctx.rotate(rotation);
+
+        ctx.beginPath();
+        ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, 2 * Math.PI);
+
+        this.applyStyle(e.dStyle);
+
+        ctx.restore();
+    }
+
 }
 
 export class PolyUtil {

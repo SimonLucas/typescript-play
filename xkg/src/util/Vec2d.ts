@@ -54,4 +54,8 @@ export class Vec2d {
     toString(): string {
         return `Vec2d(${this.x}, ${this.y})`;
     }
+
+    clone(): Vec2d {
+        return new Vec2d(this.x, this.y);
+    }    
 }

@@ -15,14 +15,14 @@ export class HelloXGraphics implements XApp {
 
         const rect = new XRect(centre, xg.width() / 2, xg.height() / 2);
         const bgRect = rect.copy();
-        bgRect.dStyle = new XStyle(XColor.magenta, XColor.white, XColor.magenta, false, true, 10.0);
+        bgRect.dStyle = new XStyle({fg: XColor.gray, fill: true});
         bgRect.w = xg.width();
         bgRect.h = xg.height();
 
         xg.draw(bgRect);
         xg.draw(rect);
 
-        const thickWhite = new XStyle(XColor.white, XColor.white, XColor.white, true, false, 10.0);
+        const thickWhite = new XStyle({fg: XColor.white, lineWidth: 5.0});
 
         xg.draw(new XLine(new Vec2d(0, 0), new Vec2d(xg.width(), xg.height()), thickWhite));
         xg.draw(new XLine(new Vec2d(0, xg.height()), new Vec2d(xg.width(), 0), thickWhite));
@@ -44,7 +44,7 @@ export class HelloXGraphics implements XApp {
             xg.height() / 4,
             50.0,
             false,
-            new XStyle(XColor.red, XColor.white, XColor.black, true, true, 2.0),
+            new XStyle(),
             this.hexAngle
         );
         xg.draw(roundedRect);
@@ -52,7 +52,7 @@ export class HelloXGraphics implements XApp {
         const text = new XText(
             "Hello XKG",
             centre,
-            new TStyle(XColor.black),
+            new TStyle({fg: XColor.black}),
             new XStyle(),
             this.hexAngle
         );

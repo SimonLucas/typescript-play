@@ -4,6 +4,8 @@ import { ForwardModel } from "./ForwardModel";
 import { PlanetWarsAgent } from "./AgentInterfaces";
 import { GameStateFactory } from "./GameStateFactory";
 import { Action } from "./AgentInterfaces";
+import { CarefulRandomAgent } from "../agents/CarefulRandomAgent";
+import { PureRandomAgent } from "../agents/PureRandomAgent";
 
 export class GameRunner {
   gameState: GameState;
@@ -68,3 +70,20 @@ export class GameRunner {
     return scores;
   }
 }
+
+
+function main(): void {
+  const gameParams = new GameParams();
+  const agent1 = new CarefulRandomAgent();
+  const agent2 = new PureRandomAgent();
+
+  const runner = new GameRunner(agent1, agent2, gameParams);
+  const finalModel = runner.runGame();
+
+  console.log("Game finished!");
+  console.log("Final tick:", finalModel.state.gameTick);
+  console.log("Winner:", finalModel.getLeader());
+  console.log("Final scores:", finalModel.statusString());
+}
+
+main();
