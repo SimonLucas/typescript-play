@@ -106,10 +106,10 @@ export class GameView implements XApp {
         planet.position,
         size,
         size,
-        new XStyle()
+        new XStyle({fg: color, fill: true, stroke: false,})
       );
       xg.draw(circle);
-      if (!this.showInfoFor.has(planet.owner)) continue;
+    //   if (!this.showInfoFor.has(planet.owner)) continue;
       const text = new XText(
         `${Math.floor(planet.nShips)}`,
         planet.position,

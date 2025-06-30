@@ -257,6 +257,10 @@ export class XGraphicsTS implements XGraphics {
 
         this.applyStyle(e.dStyle);
 
+        if (dStyle.fill) ctx.fill();
+        if (dStyle.stroke) ctx.stroke();
+
+
         ctx.restore();
     }
 
