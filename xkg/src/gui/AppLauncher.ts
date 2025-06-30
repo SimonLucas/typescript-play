@@ -19,7 +19,7 @@ export class AppLauncher {
     public app: XApp,
     public preferredWidth: number = 800,
     public preferredHeight: number = 600,
-    public frameRate: number = 25.0,
+    public frameRate: number = 100.0,
     public title: string = "Planet Wars"
   ) {
     AppLauncher.globFrameRate = frameRate;

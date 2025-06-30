@@ -7,9 +7,10 @@ import { CarefulRandomAgent } from "./planetwars/agents/CarefulRandomAgent";
 import { GameRunner } from "./planetwars/core/GameRunner";
 import { GameView } from "./planetwars/view/GameView";
 import { AppLauncher } from "./gui/AppLauncher";
+import { SimpleAppLauncher } from "./gui/SimpleAppLauncher";
 
 // Set up game parameters
-const params = new GameParams({numPlanets: 20}); 
+const params = new GameParams({numPlanets: 100, width: 800, height: 600}); 
 
 // Create initial game state
 const gameState = new GameStateFactory(params).createGame();
@@ -26,5 +27,5 @@ const view = new GameView(gameState, params, undefined, gameRunner);
 
 // Launch the app
 const title = `${agent1.getAgentType()} : Planet Wars : ${agent2.getAgentType()}`;
-const launcher = new AppLauncher(view, params.width, params.height, 60, title);
+const launcher = new SimpleAppLauncher(view, params.width, params.height, 60, title);
 launcher.launch();
