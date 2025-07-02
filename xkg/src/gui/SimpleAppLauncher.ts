@@ -1,4 +1,4 @@
-// src/gui/AppLauncher.ts
+// src/gui/SimpleAppLauncher.ts
 import { Vec2d } from "../util/Vec2d";
 import { XApp } from "./XGraphics";
 import { XGraphicsTS } from "./XGraphics";
@@ -30,6 +30,13 @@ export class SimpleAppLauncher {
 
     this.installEventHandlers();
   }
+
+  setApp(newApp: XApp): void {
+    this.app = newApp;
+  }
+
+  
+
 
   private installEventHandlers(): void {
     this.canvas.addEventListener("mousedown", (e) => {
