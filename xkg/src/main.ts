@@ -1,4 +1,7 @@
 // src/main.ts
+
+import './style.css';
+
 import { GameParams } from "./planetwars/core/GameParams";
 import { GameStateFactory } from "./planetwars/core/GameStateFactory";
 import { PureRandomAgent } from "./planetwars/agents/PureRandomAgent";

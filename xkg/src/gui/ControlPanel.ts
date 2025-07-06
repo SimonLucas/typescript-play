@@ -13,7 +13,7 @@ export class ControlPanel {
   ) {
     this.container = document.createElement("div");
     this.container.style.position = "absolute";
-    this.container.style.topbottom = "10px";
+    this.container.style.bottom = "10px";
     this.container.style.left = "10px";
     this.container.style.backgroundColor = "#ffffffcc";
     this.container.style.padding = "10px";
