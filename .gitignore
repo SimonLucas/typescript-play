@@ -35,4 +35,3 @@ pnpm-debug.log*
 
 # Optional: OS-specific
 Thumbs.db
-*.json
