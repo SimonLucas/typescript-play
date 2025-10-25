@@ -25,8 +25,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: xkg/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: xkg/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('xkg/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         working-directory: ./xkg
