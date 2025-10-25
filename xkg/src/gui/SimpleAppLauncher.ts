@@ -61,6 +61,13 @@ export class SimpleAppLauncher {
       this.app.handleMouseEvent({ t: 0, s: new Vec2d(x, y) });
     });
 
+    this.canvas.addEventListener("mouseup", (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      this.app.handleMouseEvent({ t: 1, s: new Vec2d(x, y) });
+    });
+
     this.canvas.addEventListener("keydown", (e) => {
       this.app.handleKeyEvent({ t: 0, keyCode: e.keyCode });
     });

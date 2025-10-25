@@ -6,6 +6,8 @@ import { GameParams } from "./planetwars/core/GameParams";
 import { GameStateFactory } from "./planetwars/core/GameStateFactory";
 import { PureRandomAgent } from "./planetwars/agents/PureRandomAgent";
 import { CarefulRandomAgent } from "./planetwars/agents/CarefulRandomAgent";
+import { HumanAgent } from "./planetwars/agents/HumanAgent";
+import { HeuristicAgent } from "./planetwars/agents/HeuristicAgent";
 // import { SuperGreedyAgent } from "./planetwars/agents/SuperGreedyAgent";
 import { GameRunner } from "./planetwars/core/GameRunner";
 import { GameView } from "./planetwars/view/GameView";
@@ -14,8 +16,10 @@ import { ControlPanel } from "./gui/ControlPanel";
 
 // Map from name to agent constructor
 const agentMap = {
-  PureRandomAgent: () => new PureRandomAgent(),
-  CarefulRandomAgent: () => new CarefulRandomAgent(),
+  "Human Player": () => new HumanAgent(),
+  "Heuristic Agent": () => new HeuristicAgent(),
+  "Careful Random": () => new CarefulRandomAgent(),
+  "Pure Random": () => new PureRandomAgent(),
 //   SuperGreedyAgent: () => new SuperGreedyAgent(),
 };
 
@@ -87,7 +91,7 @@ function startNewGame(agent1: any, agent2: any) {
 
 
 // First game on load
-startNewGame(new CarefulRandomAgent(), new PureRandomAgent());
+startNewGame(new HeuristicAgent(), new CarefulRandomAgent());
 
 // Add UI controls
 new ControlPanel(agentMap, startNewGame);
