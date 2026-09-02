@@ -47,6 +47,7 @@ export class GameView implements XApp {
   width: number;
   height: number;
   paused = false;
+  private quickSendEnabled = false;
   showInfoFor: Set<Player> = new Set([Player.Player1]);
 
   // Human player interaction state
@@ -143,6 +144,11 @@ export class GameView implements XApp {
     } else {
       // Source already selected, this is the destination
       if (clickedPlanet !== this.selectedSourcePlanet) {
+        if (this.quickSendEnabled) {
+          this.sendShips(clickedPlanet, 0.5);
+          this.resetHumanInteraction();
+          return;
+        }
         this.mouseDownPlanet = clickedPlanet;
         this.mouseDownTime = Date.now();
         this.isMouseDown = true;
@@ -156,31 +162,40 @@ export class GameView implements XApp {
       return;
     }
 
-    const humanPlayer = this.getHumanPlayer();
-    if (!humanPlayer) return;
-
-    const humanAgent = this.getHumanAgent();
-    if (!humanAgent) return;
-
     // Calculate hold duration and ship percentage
     const holdDuration = Date.now() - this.mouseDownTime;
     const shipPercentage = this.calculateShipPercentage(holdDuration);
+    this.sendShips(this.mouseDownPlanet, shipPercentage);
+
+    this.resetHumanInteraction();
+  }
+
+  private sendShips(destination: Planet, shipPercentage: number): void {
+    if (!this.selectedSourcePlanet) return;
+    const humanPlayer = this.getHumanPlayer();
+    const humanAgent = this.getHumanAgent();
+    if (!humanPlayer || !humanAgent) return;
+
     const numShips = Math.floor(this.selectedSourcePlanet.nShips * shipPercentage);
+    if (numShips <= 0) return;
 
-    if (numShips > 0) {
-      const action = new Action(
-        humanPlayer,
-        this.selectedSourcePlanet.id,
-        this.mouseDownPlanet.id,
-        numShips
-      );
-      humanAgent.setAction(action);
-    }
+    humanAgent.setAction(new Action(
+      humanPlayer,
+      this.selectedSourcePlanet.id,
+      destination.id,
+      numShips,
+    ));
+  }
 
-    // Reset state
+  private resetHumanInteraction(): void {
     this.selectedSourcePlanet = null;
     this.mouseDownPlanet = null;
     this.isMouseDown = false;
+  }
+
+  setQuickSendEnabled(enabled: boolean): void {
+    this.quickSendEnabled = enabled;
+    this.resetHumanInteraction();
   }
 
   private calculateShipPercentage(holdDuration: number): number {
@@ -212,9 +227,14 @@ export class GameView implements XApp {
     if (!this.gameRunner) return;
     if (this.gameRunner.forwardModel.isTerminal()) {
       console.log(this.gameRunner.forwardModel.statusString());
-      this.gameRunner.newGame();
+      this.paused = true;
+      return;
     }
     this.gameState = this.gameRunner.stepGame().state;
+    if (this.gameRunner.forwardModel.isTerminal()) {
+      console.log(this.gameRunner.forwardModel.statusString());
+      this.paused = true;
+    }
   }
 
   drawPlanets(xg: XGraphics): void {
@@ -331,8 +351,9 @@ export class GameView implements XApp {
 
   drawStatus(xg: XGraphics): void {
     if (!this.gameRunner) return;
+    const gameOver = this.gameRunner.forwardModel.isTerminal();
     const text = new XText(
-      `Game status: ${this.gameRunner.forwardModel.statusString()}`,
+      `${gameOver ? "Game over" : "Game status"}: ${this.gameRunner.forwardModel.statusString()}`,
       new Vec2d(this.width / 2, 20),
       new TStyle()
     );

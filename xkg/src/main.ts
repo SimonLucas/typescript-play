@@ -13,6 +13,8 @@ import { GameRunner } from "./planetwars/core/GameRunner";
 import { GameView } from "./planetwars/view/GameView";
 import { SimpleAppLauncher } from "./gui/SimpleAppLauncher";
 import { ControlPanel } from "./gui/ControlPanel";
+import { PlanetWarsAgent } from "./planetwars/core/AgentInterfaces";
+import { ActionRateLimitedAgent } from "./planetwars/agents/ActionRateLimitedAgent";
 
 // Map from name to agent constructor
 const agentMap = {
@@ -23,7 +25,12 @@ const agentMap = {
 //   SuperGreedyAgent: () => new SuperGreedyAgent(),
 };
 
-const params = new GameParams({ numPlanets: 100, width: 800, height: 600 });
+const params = new GameParams({
+  numPlanets: 20,
+  width: 800,
+  height: 600,
+  maxTicks: 100000,
+});
 const launcher = new SimpleAppLauncher(undefined as any, params.width, params.height, 60, "Planet Wars");
 
 // Function to resize canvas while maintaining aspect ratio
@@ -79,10 +86,29 @@ resizeCanvas();
 
 launcher.launch();
 
-function startNewGame(agent1: any, agent2: any) {
+let aiActionCooldownMs = 500;
+let activeRateLimitedAgents: ActionRateLimitedAgent[] = [];
+let quickSendEnabled = false;
+let activeGameView: GameView | null = null;
+
+function rateLimitComputerAgent(agent: PlanetWarsAgent): PlanetWarsAgent {
+  if (agent instanceof HumanAgent) return agent;
+  const rateLimitedAgent = new ActionRateLimitedAgent(agent, aiActionCooldownMs);
+  activeRateLimitedAgents.push(rateLimitedAgent);
+  return rateLimitedAgent;
+}
+
+function startNewGame(agent1: PlanetWarsAgent, agent2: PlanetWarsAgent) {
   const gameState = new GameStateFactory(params).createGame();
-  const gameRunner = new GameRunner(agent1, agent2, params);
+  activeRateLimitedAgents = [];
+  const gameRunner = new GameRunner(
+    rateLimitComputerAgent(agent1),
+    rateLimitComputerAgent(agent2),
+    params,
+  );
   const view = new GameView(gameState, params, undefined, gameRunner);
+  view.setQuickSendEnabled(quickSendEnabled);
+  activeGameView = view;
   const title = `${agent1.getAgentType()} : Planet Wars : ${agent2.getAgentType()}`;
 
   launcher.setApp(view);
@@ -91,7 +117,15 @@ function startNewGame(agent1: any, agent2: any) {
 
 
 // First game on load
-startNewGame(new HeuristicAgent(), new CarefulRandomAgent());
+startNewGame(new HeuristicAgent(), new HumanAgent());
 
 // Add UI controls
-new ControlPanel(agentMap, startNewGame);
+new ControlPanel(agentMap, startNewGame, (cooldownMs) => {
+  aiActionCooldownMs = cooldownMs;
+  for (const agent of activeRateLimitedAgents) agent.setCooldownMs(cooldownMs);
+}, aiActionCooldownMs, (enabled) => {
+  quickSendEnabled = enabled;
+  activeGameView?.setQuickSendEnabled(enabled);
+}, quickSendEnabled, (numPlanets) => {
+  params.numPlanets = numPlanets;
+}, params.numPlanets);
